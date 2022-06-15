@@ -11,26 +11,10 @@ on:
     branches: [ main ]
 
 jobs:
-  blds:
-    strategy:
-      matrix:
-        reg: ["ghcr.io/ngam"]
-        sub: ["cgc", "dkdf"]
-        con: ["tf", "pt"]
+  clean:
+    name: clean
     runs-on: ubuntu-latest
-    container:
-      image: quay.io/singularity/singularity:v3.10.0
-      options: --privileged
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    
     steps:
-
-      - name: Checkout 
-        uses: actions/checkout@v3
-
       - name: Make space
         run: |
           echo "=============================================================================="
@@ -53,6 +37,25 @@ jobs:
           # deleting 15GB
           rm -rf /usr/share/dotnet/
           df -h
+  blds:
+    strategy:
+      matrix:
+        reg: ["ghcr.io/ngam"]
+        sub: ["cgc", "dkdf"]
+        con: ["tf", "pt"]
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/singularity/singularity:v3.10.0
+      options: --privileged
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    
+    steps:
+
+      - name: Checkout 
+        uses: actions/checkout@v3
 
       - name: Singularity build
         run: |
