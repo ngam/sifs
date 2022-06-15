@@ -19,7 +19,7 @@ jobs:
         con: ["tf", "pt"]
     runs-on: ubuntu-latest
     container:
-      image: quay.io/singularity/singularity
+      image: quay.io/singularity/singularity:v3.10.0
       options: --privileged
     permissions:
       contents: read
