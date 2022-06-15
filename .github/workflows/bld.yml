@@ -60,11 +60,11 @@ jobs:
       - name: Singularity build
         run: |
             docker run  --rm --privileged --entrypoint="" -v /tmp:/tmp \
-            quay.io/singularity/singularity:v3.10.0 \
+            quay.io/singularity/singularity:v3.8.4 \
             sudo singularity build /tmp/sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
 
       - if: ${{ github.event_name == 'push' }}
         name: Singularity push
         run: |
           docker run  --rm --privileged --entrypoint="" -v /tmp:/tmp \
-          quay.io/singularity/singularity:v3.10.0 /bin/sh -c "echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
+          quay.io/singularity/singularity:v3.8.4 /bin/sh -c "echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
