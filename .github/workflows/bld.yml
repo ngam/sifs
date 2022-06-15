@@ -34,4 +34,4 @@ jobs:
         run: |
           sudo -E singularity build container.sif ${{ matrix.subject }}/${{ matrix.container }}/Singularity.def
           echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io
-          singularity push container.sif oras://ghcr.io/sifs:${{ matrix.subject }}_${{ matrix.container }}
+          singularity push container.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.subject }}_${{ matrix.container }}
