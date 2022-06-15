@@ -19,9 +19,6 @@ jobs:
         sub: ["cgc", "dkdf"]
         con: ["tf", "pt"]
     runs-on: ubuntu-latest
-    # container:
-    #   image: quay.io/singularity/singularity:v3.10.0
-    #   options: --privileged
     permissions:
       contents: read
       packages: write
@@ -29,33 +26,33 @@ jobs:
     
     steps:
 
-      # - name: Make space
-      #   run: |
-      #     echo "=============================================================================="
-      #     echo "Freeing up disk space on CI system"
-      #     echo "=============================================================================="
+      - name: Make space
+        run: |
+          echo "=============================================================================="
+          echo "Freeing up disk space on CI system"
+          echo "=============================================================================="
 
-      #     echo "Listing 100 largest packages"
-      #     dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
-      #     df -h
-      #     echo "Removing large packages"
-      #     sudo apt-get remove -y '^dotnet-.*'
-      #     sudo apt-get remove -y '^llvm-.*'
-      #     sudo apt-get remove -y 'php.*'
-      #     sudo apt-get remove -y '^mongodb-.*'
-      #     sudo apt-get remove -y '^mysql-.*'
-      #     sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel libgl1-mesa-dri
-      #     sudo apt-get autoremove -y
-      #     sudo apt-get clean
-      #     df -h
-      #     echo "Removing large directories"
-      #     # deleting 15GB
-      #     rm -rf /usr/share/dotnet/
-      #     sudo rm -rf /usr/share/dotnet
-      #     sudo rm -rf /opt/ghc
-      #     sudo rm -rf "/usr/local/share/boost"
-      #     sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-      #     df -h
+          echo "Listing 100 largest packages"
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
+          df -h
+          echo "Removing large packages"
+          sudo apt-get remove -y '^dotnet-.*'
+          sudo apt-get remove -y '^llvm-.*'
+          sudo apt-get remove -y 'php.*'
+          sudo apt-get remove -y '^mongodb-.*'
+          sudo apt-get remove -y '^mysql-.*'
+          sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel libgl1-mesa-dri
+          sudo apt-get autoremove -y
+          sudo apt-get clean
+          df -h
+          echo "Removing large directories"
+          # deleting 15GB
+          rm -rf /usr/share/dotnet/
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
       
       - name: Checkout 
         uses: actions/checkout@v3
@@ -64,11 +61,9 @@ jobs:
         run: |
             docker run --privileged --entrypoint="" -v /tmp:/tmp \
             quay.io/singularity/singularity:v3.10.0 \
-            sudo singularity build /tmp/sin.sif docker://alpine
+            sudo singularity build /tmp/sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
 
-      # docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
-      # - if: ${{ github.event_name == 'push' }}
-      -
+      - if: ${{ github.event_name == 'push' }}
         name: Singularity push
         run: |
           docker run --privileged --entrypoint="" -v /tmp:/tmp \
