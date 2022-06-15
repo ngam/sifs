@@ -19,7 +19,7 @@ jobs:
         container: ["tf"]
     runs-on: ubuntu-latest
     container:
-      image: quay.io/singularity/singularity:v3.8.3
+      image: quay.io/singularity/singularity:v3.8.4
       options: --privileged
     permissions:
       contents: read
@@ -30,8 +30,12 @@ jobs:
         name: Checkout 
         uses: actions/checkout@v3
       -
-        name: Singularity
+        name: Singularity build
         run: |
           sudo -E singularity build container.sif ${{ matrix.subject }}/${{ matrix.container }}/Singularity.def
+
+      - if: ${{ github.event_name == 'push' }}
+        name: Singularity push
+        run: |
           echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io
           singularity push container.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.subject }}_${{ matrix.container }}
