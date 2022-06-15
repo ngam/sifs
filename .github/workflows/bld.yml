@@ -29,7 +29,6 @@ jobs:
         name: Checkout 
         uses: actions/checkout@v3
       -
-      -
         name: Singularity
         run: |
           sudo -E singularity build container.sif ${{ matrix.subject }}/${{ matrix.container }}/Singularity
