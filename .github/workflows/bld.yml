@@ -4,34 +4,72 @@ on:
   release:
     types: [published]
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 9 * * *'
   pull_request:
     branches: [ main ]
   push:
     branches: [ main ]
 
 jobs:
+
   blds:
     strategy:
       matrix:
-        registry: ["ghcr.io/ngam"]
-        subject: ["cgc"]
-        container: ["tf"]
+        reg: ["ghcr.io/ngam"]
+        sub: ["cgc", "dkdf"]
+        con: ["tf", "pt"]
     runs-on: ubuntu-latest
-    container:
-      image: quay.io/singularity/singularity:v3.8.3
+    # container:
+    #   image: quay.io/singularity/singularity:v3.10.0
+    #   options: --privileged
     permissions:
       contents: read
       packages: write
       id-token: write
+    
     steps:
-      -
-        name: Checkout 
-        uses: actions/checkout@v3
-      -
-      -
-        name: Singularity
+
+      - name: Make space
         run: |
-          sudo -E singularity build container.sif ${{ matrix.subject }}/${{ matrix.container }}/Singularity
-          echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io
-          singularity push container.sif oras://ghcr.io/sifs:${{ matrix.subject }}_${{ matrix.container }}
+          echo "=============================================================================="
+          echo "Freeing up disk space on CI system"
+          echo "=============================================================================="
+
+          echo "Listing 100 largest packages"
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
+          df -h
+          echo "Removing large packages"
+          sudo apt-get remove -y '^dotnet-.*'
+          sudo apt-get remove -y '^llvm-.*'
+          sudo apt-get remove -y 'php.*'
+          sudo apt-get remove -y '^mongodb-.*'
+          sudo apt-get remove -y '^mysql-.*'
+          sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel libgl1-mesa-dri
+          sudo apt-get autoremove -y
+          sudo apt-get clean
+          df -h
+          echo "Removing large directories"
+          # deleting 15GB
+          rm -rf /usr/share/dotnet/
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
+      
+      - name: Checkout 
+        uses: actions/checkout@v3
+
+      - name: Singularity build
+        run: |
+            docker run --privileged --entrypoint="" -v /tmp:/tmp \
+            quay.io/singularity/singularity:v3.10.0 \
+            sudo singularity build /tmp/sin.sif \
+            docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
+
+      - if: ${{ github.event_name == 'push' }}
+        name: Singularity push
+        run: |
+          docker run --privileged --entrypoint="" -v /tmp:/t
+          quay.io/singularity/singularity:v3.10.0 /bin/bash -c \ 
+          "singularity remote login -u ngam --password=$(echo ${{ secrets.GITHUB_TOKEN }}) oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
