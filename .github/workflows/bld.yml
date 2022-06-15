@@ -39,10 +39,10 @@ jobs:
       - name: Singularity build
         run: |
           sudo -E singularity build sin.sif \
-          docker://${{ matrix.reg }}/${{ matrix.sub }}:${{ matrix.con }}
+          docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
 
       - if: ${{ github.event_name == 'push' }}
         name: Singularity push
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io
-          singularity push sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.cont }}
+          singularity push sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}
