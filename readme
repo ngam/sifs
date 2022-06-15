@@ -1,4 +1,4 @@
-SIF (Singularity) containers for various uses:
+SIF (Singularity) containers for various uses, "sif":
 
 - cgc
 - dkdf
@@ -10,4 +10,4 @@ Frameworks, "fw":
 
 Pull:
 
-- singularity pull oras://ghcr.io/ngam/sifs:oci_fw
+- singularity pull oras://ghcr.io/ngam/sifs:sif_fw
