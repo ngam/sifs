@@ -14,9 +14,9 @@ jobs:
   blds:
     strategy:
       matrix:
-        registry: ["ghcr.io/ngam"]
-        subject: ["cgc"]
-        container: ["tf"]
+        reg: ["ghcr.io/ngam"]
+        sub: ["cgc", "dkdf"]
+        con: ["tf", "pt"]
     runs-on: ubuntu-latest
     container:
       image: quay.io/singularity/singularity:v3.8.4
@@ -25,17 +25,19 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    
     steps:
-      -
-        name: Checkout 
+    
+      - name: Checkout 
         uses: actions/checkout@v3
-      -
-        name: Singularity build
+
+      - name: Singularity build
         run: |
-          sudo -E singularity build container.sif ${{ matrix.subject }}/${{ matrix.container }}/Singularity.def
+          sudo -E singularity build sin.sif \
+          docker://${{ matrix.reg }}${{ matrix.sub }}:${{ matrix.con }}
 
       - if: ${{ github.event_name == 'push' }}
         name: Singularity push
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io
-          singularity push container.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.subject }}_${{ matrix.container }}
+          singularity push sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.cont }}
