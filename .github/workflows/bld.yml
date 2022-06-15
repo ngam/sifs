@@ -57,7 +57,7 @@ jobs:
       - name: Singularity build
         run: |
             docker run --privileged quay.io/singularity/singularity:v3.10.0 \
-            "sudo -E singularity build sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}"
+            build sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
 
       - if: ${{ github.event_name == 'push' }}
         name: Singularity push
