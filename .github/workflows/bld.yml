@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 9 * * *'
   pull_request:
     branches: [ main ]
   push:
@@ -19,7 +19,7 @@ jobs:
         con: ["tf", "pt"]
     runs-on: ubuntu-latest
     container:
-      image: quay.io/singularity/singularity:v3.8.4
+      image: quay.io/singularity/singularity
       options: --privileged
     permissions:
       contents: read
