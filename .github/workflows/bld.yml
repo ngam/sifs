@@ -27,14 +27,14 @@ jobs:
       id-token: write
     
     steps:
-    
+
       - name: Checkout 
         uses: actions/checkout@v3
 
       - name: Singularity build
         run: |
           sudo -E singularity build sin.sif \
-          docker://${{ matrix.reg }}${{ matrix.sub }}:${{ matrix.con }}
+          docker://${{ matrix.reg }}/${{ matrix.sub }}:${{ matrix.con }}
 
       - if: ${{ github.event_name == 'push' }}
         name: Singularity push
