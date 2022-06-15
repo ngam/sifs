@@ -65,9 +65,11 @@ jobs:
             docker run --privileged --entrypoint="" -v /tmp:/tmp \
             quay.io/singularity/singularity:v3.10.0 \
             sudo singularity build /tmp/sin.sif \
-            docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
+            # docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
+            docker://alpine
 
-      - if: ${{ github.event_name == 'push' }}
+      # - if: ${{ github.event_name == 'push' }}
+      -
         name: Singularity push
         run: |
           docker run --privileged --entrypoint="" -v /tmp:/tmp \
