@@ -70,6 +70,6 @@ jobs:
       - if: ${{ github.event_name == 'push' }}
         name: Singularity push
         run: |
-          docker run --privileged --entrypoint="" -v /tmp:/t
+          docker run --privileged --entrypoint="" -v /tmp:/tmp \
           quay.io/singularity/singularity:v3.10.0 /bin/bash -c \ 
           "singularity remote login -u ngam --password=$(echo ${{ secrets.GITHUB_TOKEN }}) oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
