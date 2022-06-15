@@ -66,4 +66,4 @@ jobs:
         run: |
           docker run --privileged --entrypoint="" -v /tmp:/t
           quay.io/singularity/singularity:v3.10.0 /bin/bash -c \ 
-          "remote login -u ngam --password=$(echo ${{ secrets.GITHUB_TOKEN }}) oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
+          "singularity remote login -u ngam --password=$(echo ${{ secrets.GITHUB_TOKEN }}) oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
