@@ -63,7 +63,7 @@ jobs:
             quay.io/singularity/singularity:v3.8.4 \
             sudo singularity build /tmp/sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }}
 
-      - if: ${{ github.event_name == 'push' }}
+      - if: ${{ github.ref == 'refs/heads/main' }}
         name: Singularity push
         run: |
           docker run  --rm --privileged --entrypoint="" -v /tmp:/tmp \
