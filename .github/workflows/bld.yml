@@ -18,7 +18,7 @@ jobs:
         reg: ["ghcr.io/ngam"]
         sub: ["cgc", "dkdf"]
         con: ["tf", "pt"]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     permissions:
       contents: read
       packages: write
@@ -28,9 +28,6 @@ jobs:
 
       - name: Make space
         run: |
-          echo "=============================================================================="
-          echo "Freeing up disk space on CI system"
-          echo "=============================================================================="
 
           echo "Listing 100 largest packages"
           dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
@@ -54,18 +51,20 @@ jobs:
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           df -h
       
-      - name: Checkout 
-        uses: actions/checkout@v3
+      # - name: Checkout 
+      #   uses: actions/checkout@v3
+
+      - name: Singularity install
+        run: |
+            wget -P /tmp/ https://github.com/sylabs/singularity/releases/download/v3.10.0/singularity-ce_3.10.0-focal_amd64.deb
+            sudo apt-get install /tmp/singularity-ce_3.10.0-focal_amd64.deb
+            sudo rm -rf /tmp/*
 
       - name: Singularity build
         run: |
-            docker run  --rm --privileged --entrypoint="" -v /tmp:/tmp \
-            quay.io/singularity/singularity:v3.8.4 \
-            /bin/sh -c "sudo singularity build /tmp/sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }} && sudo singularity cache clean --force"
-
+            sudo singularity build /tmp/sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }} && sudo singularity cache clean --force
 
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Singularity push
         run: |
-          docker run  --rm --privileged --entrypoint="" -v /tmp:/tmp \
-          quay.io/singularity/singularity:v3.8.4 /bin/sh -c "echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}"
+            echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}
