@@ -59,8 +59,8 @@ jobs:
 
       - name: Singularity install
         run: |
-            wget https://github.com/sylabs/singularity/releases/download/v3.10.0/singularity-ce_3.10.0-focal_amd64.deb
-            sudo apt update --yes && sudo apt install ~/singularity-ce_3.10.0-focal_amd64.deb
+            wget -P /tmp/ https://github.com/sylabs/singularity/releases/download/v3.10.0/singularity-ce_3.10.0-focal_amd64.deb
+            sudo apt update --yes && sudo apt install /tmp/singularity-ce_3.10.0-focal_amd64.deb
       - name: Singularity build
         run: |
             sudo singularity build /tmp/sin.sif docker://${{ matrix.reg }}/ocis:${{ matrix.sub }}_${{ matrix.con }} && sudo singularity cache clean --force
