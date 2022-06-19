@@ -1,4 +1,4 @@
-name: bld
+name: bld2
 
 on:
   release:
@@ -12,7 +12,7 @@ on:
 
 jobs:
 
-  blds:
+  blds2:
     strategy:
       matrix:
         reg: ["ghcr.io/ngam"]
@@ -69,4 +69,4 @@ jobs:
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Singularity push
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}
+            echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ngam --password-stdin oras://ghcr.io && singularity push /tmp/sin.sif oras://ghcr.io/ngam/sifs:${{ matrix.sub }}_${{ matrix.con }}
